@@ -20,6 +20,12 @@ import {
     CardHeader,
     CardTitle,
 } from "@/components/ui/card"
+import TimetablePreferences from "./TimetablePreferences";
+import useUserTimetable from "@/hooks/contexts/useUserTimetable";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import { cn } from "@/lib/utils";
+import {GraduationCap, Hash} from 'lucide-react';
 
 const DisplaySettingsCard = () => {
     const { darkMode, setDarkMode, language, setLanguage } = useSettings();
@@ -60,6 +66,7 @@ const DisplaySettingsCard = () => {
 }
 
 const TimetableSettingsCard = () => {
+    const { preferences, setPreferences } = useUserTimetable();
     const dict = useDictionary();
     return <Card>
         <CardHeader>
@@ -70,21 +77,37 @@ const TimetableSettingsCard = () => {
             <div className="flex flex-col gap-4 py-4" id="theme">
                 <TimetablePreview />
                 <TimetableThemeList />
+                <TimetablePreferences settings={preferences} onSettingsChange={setPreferences} />
             </div>
         </CardContent>
     </Card>
 }
 
 const AccountInfoSettingsCard = () => {
-    const { ais } = useHeadlessAIS();
+    const { user, ais, setAISCredentials } = useHeadlessAIS();
     const dict = useDictionary();
-    return <Card>
+    return <Card id="account">
         <CardHeader>
             <CardTitle>{dict.settings.account.title}</CardTitle>
             <CardDescription>{dict.settings.account.description}</CardDescription>
         </CardHeader>
         <CardContent>
-            <div className="flex flex-row gap-4 py-4" id="account">
+            {user && <div className="flex flex-col gap-4">
+                <div className="flex flex-col gap-4 w-full">
+                    <div className="flex flex-col gap-2">
+                    <h2 className="text-xl font-semibold">{user.name_zh}</h2>
+                    <h3 className="text-sm">{user.name_en}</h3>
+                    </div>
+                    <div className="flex flex-col gap-1">
+                    <div className="text-gray-500 flex flex-row text-sm"><GraduationCap className="w-4 h-4 mr-2" /> {user.department}</div>
+                    <div className="text-gray-500 flex flex-row text-sm"><Hash className="w-4 h-4 mr-2" /> {user.studentid}</div>
+                    </div>
+                </div>
+                <div className="flex flex-row justify-end items-center w-full">
+                    <Button variant="destructive" onClick={() => setAISCredentials()}>{dict.settings.account.signout}</Button>
+                </div>
+            </div>}
+            <div className={cn("flex flex-row gap-4 py-4", user ? 'hidden': '')} id="account">
                 <div className="flex flex-col flex-1 gap-1">
                     <h2 className="font-semibold text-base">{dict.settings.account.ccxp.title}</h2>
                     <p className="text-gray-600 dark:text-gray-400 text-sm">{dict.settings.account.ccxp.description}</p>

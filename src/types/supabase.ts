@@ -92,7 +92,7 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "campaigns"
             referencedColumns: ["id"]
-          }
+          },
         ]
       }
       campaigns: {
@@ -142,7 +142,7 @@ export type Database = {
             isOneToOne: true
             referencedRelation: "courses"
             referencedColumns: ["raw_id"]
-          }
+          },
         ]
       }
       cds_courses: {
@@ -164,7 +164,7 @@ export type Database = {
           teacher_zh: string[]
           times: string[]
           venues: string[]
-          cds_time_slots: unknown | null
+          cds_time_slots: string[] | null
         }
         Insert: {
           class: string
@@ -238,7 +238,7 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "cds_terms"
             referencedColumns: ["term"]
-          }
+          },
         ]
       }
       cds_submissions: {
@@ -279,7 +279,7 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "cds_terms"
             referencedColumns: ["term"]
-          }
+          },
         ]
       }
       cds_terms: {
@@ -305,6 +305,217 @@ export type Database = {
           term?: string
         }
         Relationships: []
+      }
+      course_comments: {
+        Row: {
+          comment: string
+          easiness: number
+          id: number
+          posted_on: string
+          raw_id: string
+          scoring: number
+          submitter: string
+        }
+        Insert: {
+          comment: string
+          easiness: number
+          id?: number
+          posted_on: string
+          raw_id: string
+          scoring: number
+          submitter?: string
+        }
+        Update: {
+          comment?: string
+          easiness?: number
+          id?: number
+          posted_on?: string
+          raw_id?: string
+          scoring?: number
+          submitter?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "course_comments_raw_id_fkey"
+            columns: ["raw_id"]
+            isOneToOne: false
+            referencedRelation: "courses"
+            referencedColumns: ["raw_id"]
+          },
+        ]
+      }
+      course_dates: {
+        Row: {
+          created: string
+          date: string
+          id: number
+          raw_id: string
+          submitter: string
+          title: string
+          type: string
+        }
+        Insert: {
+          created?: string
+          date: string
+          id?: number
+          raw_id: string
+          submitter: string
+          title: string
+          type: string
+        }
+        Update: {
+          created?: string
+          date?: string
+          id?: number
+          raw_id?: string
+          submitter?: string
+          title?: string
+          type?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "course_dates_raw_id_fkey"
+            columns: ["raw_id"]
+            isOneToOne: false
+            referencedRelation: "courses"
+            referencedColumns: ["raw_id"]
+          },
+        ]
+      }
+      course_enroll_stats: {
+        Row: {
+          confirmed: number
+          limit: number | null
+          raw_id: string
+          remaining: number | null
+          updated_at: string
+          waiting: number
+        }
+        Insert: {
+          confirmed: number
+          limit?: number | null
+          raw_id: string
+          remaining?: number | null
+          updated_at?: string
+          waiting: number
+        }
+        Update: {
+          confirmed?: number
+          limit?: number | null
+          raw_id?: string
+          remaining?: number | null
+          updated_at?: string
+          waiting?: number
+        }
+        Relationships: []
+      }
+      course_hidden: {
+        Row: {
+          ckey: string
+          code: string
+          cred: string
+          ctime: string
+          div: string
+          glimit: string
+          num: string
+          pre: string
+          range: string
+          real: string
+          type: string
+        }
+        Insert: {
+          ckey: string
+          code: string
+          cred: string
+          ctime: string
+          div: string
+          glimit: string
+          num: string
+          pre: string
+          range: string
+          real: string
+          type: string
+        }
+        Update: {
+          ckey?: string
+          code?: string
+          cred?: string
+          ctime?: string
+          div?: string
+          glimit?: string
+          num?: string
+          pre?: string
+          range?: string
+          real?: string
+          type?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "course_hidden_ckey_fkey"
+            columns: ["ckey"]
+            isOneToOne: true
+            referencedRelation: "courses"
+            referencedColumns: ["raw_id"]
+          },
+        ]
+      }
+      course_logs: {
+        Row: {
+          action: string
+          created_at: string
+          id: number
+          raw_id: string
+          user: string
+        }
+        Insert: {
+          action: string
+          created_at?: string
+          id?: number
+          raw_id: string
+          user: string
+        }
+        Update: {
+          action?: string
+          created_at?: string
+          id?: number
+          raw_id?: string
+          user?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "course_logs_raw_id_fkey"
+            columns: ["raw_id"]
+            isOneToOne: false
+            referencedRelation: "courses"
+            referencedColumns: ["raw_id"]
+          },
+        ]
+      }
+      course_platform: {
+        Row: {
+          id: string
+          platform: string
+          raw_id: string
+        }
+        Insert: {
+          id: string
+          platform: string
+          raw_id: string
+        }
+        Update: {
+          id?: string
+          platform?: string
+          raw_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "course_platform_raw_id_fkey"
+            columns: ["raw_id"]
+            isOneToOne: true
+            referencedRelation: "courses"
+            referencedColumns: ["raw_id"]
+          },
+        ]
       }
       course_scores: {
         Row: {
@@ -338,7 +549,7 @@ export type Database = {
             isOneToOne: true
             referencedRelation: "courses"
             referencedColumns: ["raw_id"]
-          }
+          },
         ]
       }
       course_students: {
@@ -373,7 +584,7 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "courses"
             referencedColumns: ["raw_id"]
-          }
+          },
         ]
       }
       course_syllabus: {
@@ -405,7 +616,7 @@ export type Database = {
             isOneToOne: true
             referencedRelation: "courses"
             referencedColumns: ["raw_id"]
-          }
+          },
         ]
       }
       courses: {
@@ -419,6 +630,7 @@ export type Database = {
           cross_discipline: string[] | null
           department: string
           elective_for: string[] | null
+          enrolled: number
           first_specialization: string[] | null
           ge_target: string | null
           ge_type: string | null
@@ -438,7 +650,7 @@ export type Database = {
           teacher_zh: string[]
           times: string[]
           venues: string[]
-          time_slots: unknown | null
+          time_slots: string[] | null
         }
         Insert: {
           capacity?: number | null
@@ -450,6 +662,7 @@ export type Database = {
           cross_discipline?: string[] | null
           department: string
           elective_for?: string[] | null
+          enrolled?: number
           first_specialization?: string[] | null
           ge_target?: string | null
           ge_type?: string | null
@@ -480,6 +693,7 @@ export type Database = {
           cross_discipline?: string[] | null
           department?: string
           elective_for?: string[] | null
+          enrolled?: number
           first_specialization?: string[] | null
           ge_target?: string | null
           ge_type?: string | null
@@ -531,14 +745,17 @@ export type Database = {
       }
       users: {
         Row: {
+          banned: boolean
           roles: string[]
           user_id: string
         }
         Insert: {
+          banned?: boolean
           roles: string[]
           user_id: string
         }
         Update: {
+          banned?: boolean
           roles?: string[]
           user_id?: string
         }
@@ -588,7 +805,7 @@ export type Database = {
         Args: {
           "": unknown
         }
-        Returns: unknown
+        Returns: string[]
       }
       search_cds_courses: {
         Args: {
@@ -628,6 +845,7 @@ export type Database = {
           cross_discipline: string[] | null
           department: string
           elective_for: string[] | null
+          enrolled: number
           first_specialization: string[] | null
           ge_target: string | null
           ge_type: string | null
@@ -691,13 +909,13 @@ export type Database = {
         Args: {
           times_arr: string[]
         }
-        Returns: unknown
+        Returns: string[]
       }
       time_slots: {
         Args: {
           "": unknown
         }
-        Returns: unknown
+        Returns: string[]
       }
     }
     Enums: {
@@ -709,14 +927,16 @@ export type Database = {
   }
 }
 
+type PublicSchema = Database[Extract<keyof Database, "public">]
+
 export type Tables<
   PublicTableNameOrOptions extends
-    | keyof (Database["public"]["Tables"] & Database["public"]["Views"])
+    | keyof (PublicSchema["Tables"] & PublicSchema["Views"])
     | { schema: keyof Database },
   TableName extends PublicTableNameOrOptions extends { schema: keyof Database }
     ? keyof (Database[PublicTableNameOrOptions["schema"]]["Tables"] &
         Database[PublicTableNameOrOptions["schema"]]["Views"])
-    : never = never
+    : never = never,
 > = PublicTableNameOrOptions extends { schema: keyof Database }
   ? (Database[PublicTableNameOrOptions["schema"]]["Tables"] &
       Database[PublicTableNameOrOptions["schema"]]["Views"])[TableName] extends {
@@ -724,67 +944,67 @@ export type Tables<
     }
     ? R
     : never
-  : PublicTableNameOrOptions extends keyof (Database["public"]["Tables"] &
-      Database["public"]["Views"])
-  ? (Database["public"]["Tables"] &
-      Database["public"]["Views"])[PublicTableNameOrOptions] extends {
-      Row: infer R
-    }
-    ? R
+  : PublicTableNameOrOptions extends keyof (PublicSchema["Tables"] &
+        PublicSchema["Views"])
+    ? (PublicSchema["Tables"] &
+        PublicSchema["Views"])[PublicTableNameOrOptions] extends {
+        Row: infer R
+      }
+      ? R
+      : never
     : never
-  : never
 
 export type TablesInsert<
   PublicTableNameOrOptions extends
-    | keyof Database["public"]["Tables"]
+    | keyof PublicSchema["Tables"]
     | { schema: keyof Database },
   TableName extends PublicTableNameOrOptions extends { schema: keyof Database }
     ? keyof Database[PublicTableNameOrOptions["schema"]]["Tables"]
-    : never = never
+    : never = never,
 > = PublicTableNameOrOptions extends { schema: keyof Database }
   ? Database[PublicTableNameOrOptions["schema"]]["Tables"][TableName] extends {
       Insert: infer I
     }
     ? I
     : never
-  : PublicTableNameOrOptions extends keyof Database["public"]["Tables"]
-  ? Database["public"]["Tables"][PublicTableNameOrOptions] extends {
-      Insert: infer I
-    }
-    ? I
+  : PublicTableNameOrOptions extends keyof PublicSchema["Tables"]
+    ? PublicSchema["Tables"][PublicTableNameOrOptions] extends {
+        Insert: infer I
+      }
+      ? I
+      : never
     : never
-  : never
 
 export type TablesUpdate<
   PublicTableNameOrOptions extends
-    | keyof Database["public"]["Tables"]
+    | keyof PublicSchema["Tables"]
     | { schema: keyof Database },
   TableName extends PublicTableNameOrOptions extends { schema: keyof Database }
     ? keyof Database[PublicTableNameOrOptions["schema"]]["Tables"]
-    : never = never
+    : never = never,
 > = PublicTableNameOrOptions extends { schema: keyof Database }
   ? Database[PublicTableNameOrOptions["schema"]]["Tables"][TableName] extends {
       Update: infer U
     }
     ? U
     : never
-  : PublicTableNameOrOptions extends keyof Database["public"]["Tables"]
-  ? Database["public"]["Tables"][PublicTableNameOrOptions] extends {
-      Update: infer U
-    }
-    ? U
+  : PublicTableNameOrOptions extends keyof PublicSchema["Tables"]
+    ? PublicSchema["Tables"][PublicTableNameOrOptions] extends {
+        Update: infer U
+      }
+      ? U
+      : never
     : never
-  : never
 
 export type Enums<
   PublicEnumNameOrOptions extends
-    | keyof Database["public"]["Enums"]
+    | keyof PublicSchema["Enums"]
     | { schema: keyof Database },
   EnumName extends PublicEnumNameOrOptions extends { schema: keyof Database }
     ? keyof Database[PublicEnumNameOrOptions["schema"]]["Enums"]
-    : never = never
+    : never = never,
 > = PublicEnumNameOrOptions extends { schema: keyof Database }
   ? Database[PublicEnumNameOrOptions["schema"]]["Enums"][EnumName]
-  : PublicEnumNameOrOptions extends keyof Database["public"]["Enums"]
-  ? Database["public"]["Enums"][PublicEnumNameOrOptions]
-  : never
+  : PublicEnumNameOrOptions extends keyof PublicSchema["Enums"]
+    ? PublicSchema["Enums"][PublicEnumNameOrOptions]
+    : never

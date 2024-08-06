@@ -4,14 +4,14 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 import { Badge } from "@/components/ui/badge";
 import { Check, X } from "lucide-react";
 import { Button } from "@/components/ui/button"
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { useSearchParams } from "next/navigation";
 import useCustomRefinementList from "./useCustomRefinementList";
 import { getFormattedClassCode } from "@/helpers/courses";
 import useCustomMenu from '@/app/[lang]/(mods-pages)/courses/useCustomMenu';
 import { lastSemester } from "@/const/semester";
 
-const ClassRefinementItem =  ({
+const ClassRefinementItem = ({
   limit = 10,
   searchable = false,
   clientSearch = false,
@@ -33,37 +33,39 @@ const ClassRefinementItem =  ({
     attribute: 'for_class',
     limit: limit,
   })
-  
-  const { 
+
+  const {
     items: semesterItem,
-   } = useCustomMenu({
+  } = useCustomMenu({
     attribute: 'semester',
   });
 
-  const selectedSemester = semesterItem.find(item => item.isRefined)?.value ?? lastSemester.id;
-  
+  const selectedSemester = useMemo(() => semesterItem.find(item => item.isRefined)?.value ?? lastSemester.id, [semesterItem])
+
   const searchParams = useSearchParams()
   useEffect(() => {
     const refinedItems = items.filter((item) => item.isRefined)
     setSelected(refinedItems.map((item) => item.value))
   }, [items, searchParams])
-  
+
+  const [typable, setEnableTyping] = useState(false)
   const [searchValue, setSearchValue] = useState('')
   const [searching, setSearching] = useState(false)
   const [selected, setSelected] = useState<string[]>([])
 
-  const search = (name: string) => {
+  const search = useCallback((name: string) => {
     setSearchValue(name)
     if (!clientSearch) {
       searchForItems(name)
     }
     if (name == '') {
-        const refined = items.filter((item) => item.isRefined)
-        setSelected(refined.map((item) => item.value))
+      const refined = items.filter((item) => item.isRefined)
+      setSelected(refined.map((item) => item.value))
     }
-  }
+  }, [searchForItems, items])
 
-  const openChange = (open: boolean) => {
+  const openChange = useCallback((open: boolean) => {
+    setEnableTyping(false)
     if (open == true) {
       setSearching(true)
     }
@@ -71,7 +73,7 @@ const ClassRefinementItem =  ({
       setSearching(false)
       search('')
     }
-  }
+  }, [search])
 
   const select = (value: string) => {
     setSearchValue('')
@@ -85,15 +87,15 @@ const ClassRefinementItem =  ({
   }
 
   return <Popover modal={true} onOpenChange={openChange}>
-      <Button variant="outline" className={`w-full justify-start h-max p-0`}>
-        <PopoverTrigger asChild>
-          <div className="flex-1 text-left px-4 py-2">
+    <Button variant="outline" className={`w-full justify-start h-max p-0`}>
+      <PopoverTrigger asChild>
+        <div className="flex-1 text-left px-4 py-2">
           {searching ?
             "Selecting..." :
-            (selected.length == 0 ? 
+            (selected.length == 0 ?
               'All' :
               <div className="flex flex-col gap-1">
-                {selected.map(i => 
+                {selected.map(i =>
                   <Badge variant="outline" className="">
                     {getFormattedClassCode(i, selectedSemester)}
                   </Badge>
@@ -101,16 +103,18 @@ const ClassRefinementItem =  ({
               </div>
             )
           }
-          </div>
-        </PopoverTrigger>
-        {selected.length > 0 && <X className="px-2 w-8 h-6 cursor-pointer" onClick={clear}/>}
-      </Button>
-      
-    
+        </div>
+      </PopoverTrigger>
+      {selected.length > 0 && <X className="px-2 w-8 h-6 cursor-pointer" onClick={clear} />}
+    </Button>
+
+
     <PopoverContent className="p-0" align="start">
       <Command shouldFilter={clientSearch}>
-        {searchable && 
+        {searchable &&
           <CommandInput
+            onClick={() => setEnableTyping(true)}
+            inputMode={typable ? 'text' : 'none'}
             autoComplete="off"
             autoCorrect="off"
             autoCapitalize="off"
@@ -121,7 +125,7 @@ const ClassRefinementItem =  ({
             placeholder={placeholder}
           />
         }
-        <ScrollArea className="h-[300px]">
+        <ScrollArea onScrollCapture={() => setEnableTyping(false)} className="h-[300px]">
           <CommandList className="max-h-none">
             <CommandEmpty>No results found.</CommandEmpty>
             {items.sort((a, b) => {

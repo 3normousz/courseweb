@@ -189,7 +189,6 @@ export const signInToCCXP = async (
           )?.[1]!;
           if (!pwdstr) {
             console.error("pwdstr not found");
-            console.error("Full response", resHTML);
             continue;
           }
           console.log("pwdstr: ", pwdstr);
@@ -201,9 +200,9 @@ export const signInToCCXP = async (
           ).then((res) => res.blob());
           if (img.type != "image/png") {
             console.error("Image is not PNG");
-            console.error("Full response", res.text());
             continue;
           }
+          console.error("Valid PNG");
 
           //fetch the image from the url and send as base64
           console.log("Fetching CAPTCHA");
@@ -218,9 +217,9 @@ export const signInToCCXP = async (
           // throw new Error(LoginError.Unknown);
           continue;
         }
-      } while (tries <= 5);
-      if (tries == 6 || answer.length != 6) {
-        throw new Error("Internal Server Error");
+      } while (tries <= 8);
+      if (tries == 9 || answer.length != 6) {
+        throw new Error("OCR Failed Utterly");
       }
       console.log("Attempt Login");
       const response = await fetchWithTimeout(

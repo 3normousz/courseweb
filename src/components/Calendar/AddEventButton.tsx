@@ -9,7 +9,13 @@ import {
   startOfDay,
 } from "date-fns";
 import { cn } from "@/lib/utils";
-import { PropsWithChildren, useEffect, useMemo, useState } from "react";
+import {
+  PropsWithChildren,
+  useCallback,
+  useEffect,
+  useMemo,
+  useState,
+} from "react";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { UseFormReturn, useForm, useWatch } from "react-hook-form";
@@ -70,6 +76,23 @@ export const AddEventButton = ({
   const { currentColors } = useUserTimetable();
   const { labels } = useCalendar();
 
+  const generateEmptyEvent = useCallback(
+    () => ({
+      id: uuidv4(),
+      title: undefined,
+      details: undefined,
+      allDay: true,
+      start: startOfDay(new Date()),
+      end: endOfDay(new Date()),
+      repeat: {
+        type: null,
+      },
+      color: currentColors[0],
+      tag: labels[0],
+    }),
+    [currentColors, labels],
+  );
+
   const minuteStep = 15;
   const form = useForm<z.infer<typeof eventFormSchema>>({
     resolver: zodResolver(eventFormSchema),
@@ -80,27 +103,22 @@ export const AddEventButton = ({
               ...defaultEvent,
               repeat: defaultEvent.repeat ?? { type: null },
             }
-          : {
-              id: uuidv4(),
-              title: undefined,
-              details: undefined,
-              allDay: true,
-              start: startOfDay(new Date()),
-              end: endOfDay(new Date()),
-              repeat: {
-                type: null,
-              },
-              color: currentColors[0],
-              tag: labels[0],
-            },
-      [defaultEvent, currentColors, labels],
+          : generateEmptyEvent(),
+      [defaultEvent, generateEmptyEvent],
     ),
     mode: "onChange",
   });
 
   useEffect(() => {
     form.trigger();
-  }, [defaultEvent, form.trigger]);
+  }, [defaultEvent, form, open]);
+
+  // if form is opened, and defaultEvent is not provided, reset form to default values
+  useEffect(() => {
+    if (open && !defaultEvent) {
+      form.reset(generateEmptyEvent());
+    }
+  }, [defaultEvent, form, open, generateEmptyEvent]);
 
   const onSubmit = (data: z.infer<typeof eventFormSchema>) => {
     const eventDef: CalendarEvent = {
@@ -155,7 +173,7 @@ export const AddEventButton = ({
       form.trigger(["start", "end"]);
       setDelayed(false);
     }
-  }, [delayed, defaultEvent]);
+  }, [delayed, defaultEvent, form]);
 
   //if from normal to all day, set start and end to 00:00 and 23:59
   useEffect(() => {
@@ -166,7 +184,7 @@ export const AddEventButton = ({
     } else {
       setDelayed(true);
     }
-  }, [allDay]);
+  }, [allDay, form]);
 
   const renderNormalDatePicker = () => {
     return (
@@ -210,15 +228,32 @@ export const AddEventButton = ({
                             minutes: originalDate.getMinutes(),
                           });
                           field.onChange(newDate);
+                          // update end date as well
+                          const diff =
+                            form.getValues("end").getTime() -
+                            originalDate.getTime();
+                          form.setValue(
+                            "end",
+                            new Date(newDate.getTime() + diff),
+                          );
+                          form.trigger(["end"]);
                         }}
                         initialFocus
                       />
                     </PopoverContent>
                   </PopoverPortal>
                 </Popover>
-                <TimeSelect
-                  minuteStep={minuteStep}
-                  onDateChange={(d) => {
+                <Input
+                  type="time"
+                  onChange={(e) => {
+                    const timesplits = e.target.value.split(":");
+                    // ensure completed input before setting
+                    if (timesplits[0].length < 2 || timesplits[1].length < 2)
+                      return;
+                    const d = set(field.value, {
+                      hours: parseInt(timesplits[0]),
+                      minutes: parseInt(timesplits[1]),
+                    });
                     const diff =
                       form.getValues("end").getTime() -
                       form.getValues("start").getTime();
@@ -231,7 +266,7 @@ export const AddEventButton = ({
                       form.trigger(["end"]);
                     }
                   }}
-                  date={field.value}
+                  value={format(field.value, "HH:mm")}
                 />
               </FormItem>
             )}
@@ -241,10 +276,20 @@ export const AddEventButton = ({
             name="end"
             render={({ field }) => (
               <FormItem>
-                <TimeSelect
-                  minuteStep={minuteStep}
-                  onDateChange={field.onChange}
-                  date={field.value}
+                <Input
+                  type="time"
+                  onChange={(v) => {
+                    const timesplits = v.target.value.split(":");
+                    // ensure completed input before setting
+                    if (timesplits[0].length < 2 || timesplits[1].length < 2)
+                      return;
+                    const d = set(field.value, {
+                      hours: parseInt(timesplits[0]),
+                      minutes: parseInt(timesplits[1]),
+                    });
+                    field.onChange(d);
+                  }}
+                  value={format(field.value, "HH:mm")}
                 />
                 <FormMessage />
               </FormItem>

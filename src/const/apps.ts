@@ -24,6 +24,7 @@ import {
   University,
   CreditCardIcon,
   CalendarIcon,
+  Notebook,
 } from "lucide-react";
 
 export const categories: {
@@ -52,6 +53,7 @@ export const categories: {
 };
 
 export const apps: {
+  hidden?: boolean;
   id: string;
   category: keyof typeof categories;
   title_zh: string;
@@ -134,6 +136,17 @@ export const apps: {
     title_en: "Academic Information System",
     href: "https://www.ccxp.nthu.edu.tw/ccxp/COURSE/JH/7/7.1/7.1.3/logout.php",
     Icon: University,
+    target: "_blank",
+    ais: true,
+  },
+  {
+    hidden: true,
+    id: "eeclass",
+    category: "campuslife",
+    title_zh: "eeclass",
+    title_en: "eeclass",
+    href: "eeclass",
+    Icon: Notebook,
     target: "_blank",
     ais: true,
   },

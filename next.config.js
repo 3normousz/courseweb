@@ -1,12 +1,12 @@
+const dns = require("dns");
+
+dns.setDefaultResultOrder("ipv4first");
+
 const withPWA = require("@ducanh2912/next-pwa").default({
   dest: "public",
   disable: process.env.NODE_ENV === "development",
-  cacheStartUrl: true,
-  cacheOnFrontEndNav: true,
-  aggressiveFrontEndNavCaching: true,
   reloadOnOnline: true,
   swcMinify: true,
-  dynamicStartUrlRedirect: "/zh/today",
   workboxOptions: {
     disableDevLogs: true,
   },
@@ -42,6 +42,7 @@ const nextConfig = {
     // return the modified config
     return config;
   },
+  output: "standalone",
 };
 
 const { withSentryConfig } = require("@sentry/nextjs");

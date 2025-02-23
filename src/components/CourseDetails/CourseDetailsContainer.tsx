@@ -1,20 +1,16 @@
 import { format } from "date-fns";
-import { ResolvingMetadata } from "next";
 import {
   AlertTriangle,
   ChevronLeft,
-  CheckCircle,
   ArrowRight,
-  Share,
-  Share2,
   CalendarPlus,
+  ExternalLink,
 } from "lucide-react";
 import Link from "next/link";
 import DownloadSyllabus from "./DownloadSyllabus";
 import Fade from "@/components/Animation/Fade";
 import { getDictionary } from "@/dictionaries/dictionaries";
 import { getCoursePTTReview, getCourseWithSyllabus } from "@/lib/course";
-import { LangProps } from "@/types/pages";
 import { toPrettySemester } from "@/helpers/semester";
 import CourseTagList from "@/components/Courses/CourseTagsList";
 import {
@@ -30,12 +26,6 @@ import {
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
 import { Alert, AlertDescription } from "@/components/ui/alert";
-import {
-  Accordion,
-  AccordionContent,
-  AccordionItem,
-  AccordionTrigger,
-} from "@/components/ui/accordion";
 import { Badge } from "@/components/ui/badge";
 import supabase, {
   CourseDefinition,
@@ -70,15 +60,15 @@ const SelectCourseButtonDynamic = dynamicFn(
   () => import("@/components/Courses/SelectCourseButton"),
   { ssr: false },
 );
-const TimetableDynamic = dynamicFn(
-  () => import("@/components/Timetable/Timetable"),
-  { ssr: false },
-);
 const CommmentsSectionDynamic = dynamicFn(
   () =>
     import("@/components/CourseDetails/CommentsContainer").then(
       (m) => m.CommmentsSection,
     ),
+  { ssr: false },
+);
+const CCXPSyllabusLinkDynamic = dynamicFn(
+  () => import("@/components/CourseDetails/CCXPSyllabusLink"),
   { ssr: false },
 );
 
@@ -623,6 +613,28 @@ const CourseDetailContainer = async ({
                   </div>
                 </div>
               )}
+
+              <CCXPSyllabusLinkDynamic course={course as MinimalCourse}>
+                <a className="font-semibold text-base">
+                  {dict.course.details.view_ccxp_syllabus}{" "}
+                  <ExternalLink className="w-4 h-4 inline" />
+                </a>
+              </CCXPSyllabusLinkDynamic>
+              <div className="flex flex-col gap-1">
+                <div className="flex flex-row gap-2 flex-wrap">
+                  <p className="text-xs text-gray-500">
+                    Details Updated:{" "}
+                    {format(new Date(course.updated_at), "yyyy-MM-dd HH:mm")}
+                  </p>
+                  <p className="text-xs text-gray-500">
+                    Syllabus Updated:{" "}
+                    {format(
+                      new Date(course.course_syllabus?.updated_at ?? 0),
+                      "yyyy-MM-dd HH:mm",
+                    )}
+                  </p>
+                </div>
+              </div>
             </div>
           </div>
           <CommmentsSectionDynamic course={course as MinimalCourse} />

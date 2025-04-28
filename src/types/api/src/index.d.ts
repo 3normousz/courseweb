@@ -1,4 +1,10 @@
-export declare const app: import("hono/hono-base").HonoBase<{}, {
+import type { D1Database } from "@cloudflare/workers-types";
+export type Bindings = {
+    DB: D1Database;
+};
+export declare const app: import("hono/hono-base").HonoBase<{
+    Bindings: Bindings;
+}, {
     "/": {
         $get: {
             input: {};
@@ -680,7 +686,74 @@ export declare const app: import("hono/hono-base").HonoBase<{}, {
                     labels: string[];
                 };
             };
-            output: {};
+            output: {
+                url: string;
+                repository_url: string;
+                labels_url: string;
+                comments_url: string;
+                events_url: string;
+                html_url: string;
+                id: number;
+                node_id: string;
+                number: number;
+                title: string;
+                user: {
+                    login: string;
+                    id: number;
+                    node_id: string;
+                    avatar_url: string;
+                    gravatar_id: string;
+                    url: string;
+                    html_url: string;
+                    followers_url: string;
+                    following_url: string;
+                    gists_url: string;
+                    starred_url: string;
+                    subscriptions_url: string;
+                    organizations_url: string;
+                    repos_url: string;
+                    events_url: string;
+                    received_events_url: string;
+                    type: string;
+                    site_admin: boolean;
+                };
+                labels: string[];
+                state: string;
+                locked: boolean;
+                assignee: null;
+                assignees: [];
+                milestone: null;
+                comments: number;
+                created_at: string;
+                updated_at: string;
+                closed_at: null;
+                author_association: string;
+                active_lock_reason: null;
+                draft: boolean;
+                pull_request: {
+                    url: string;
+                    html_url: string;
+                    diff_url: string;
+                    patch_url: string;
+                    merged_at: null;
+                };
+                body: null;
+                reactions: {
+                    url: string;
+                    total_count: number;
+                    "+1": number;
+                    "-1": number;
+                    laugh: number;
+                    hooray: number;
+                    confused: number;
+                    heart: number;
+                    rocket: number;
+                    eyes: number;
+                };
+                timeline_url: string;
+                performed_via_github_app: null;
+                state_reason: null;
+            };
             outputFormat: "json";
             status: import("hono/utils/http-status").ContentfulStatusCode;
         };
@@ -765,5 +838,275 @@ export declare const app: import("hono/hono-base").HonoBase<{}, {
             status: import("hono/utils/http-status").ContentfulStatusCode;
         };
     };
-}, "/issue">, "/">;
+}, "/issue"> | import("hono/types").MergeSchemaPath<{
+    "/folders/pull": {
+        $get: {
+            input: {
+                query: {
+                    id: string | string[];
+                    serverTimestamp: string | string[];
+                    batchSize?: string | string[] | undefined;
+                };
+            };
+            output: {
+                checkpoint: {
+                    id: string;
+                    serverTimestamp: string;
+                } | null;
+                documents: {
+                    id: string;
+                    title: string;
+                    min: number;
+                    max: number;
+                    parent: string | null;
+                    metric: string;
+                    requireChildValidation: boolean;
+                    titlePlacement: string;
+                    order: number;
+                    color: string | null;
+                    expanded: boolean | null;
+                    _deleted: boolean;
+                }[];
+            };
+            outputFormat: "json";
+            status: import("hono/utils/http-status").ContentfulStatusCode;
+        };
+    };
+} & {
+    "/folders/push": {
+        $post: {
+            input: {
+                json: {
+                    newDocumentState: {
+                        id: string;
+                        _deleted: boolean;
+                    } & {
+                        [k: string]: unknown;
+                    };
+                    assumedMasterState?: import("zod").objectInputType<{
+                        id: import("zod").ZodString;
+                        _deleted: import("zod").ZodBoolean;
+                    }, import("zod").ZodTypeAny, "passthrough"> | undefined;
+                }[];
+            };
+            output: {
+                id: string;
+                title: string;
+                min: number;
+                max: number;
+                parent: string | null;
+                metric: string;
+                requireChildValidation: boolean;
+                titlePlacement: string;
+                order: number;
+                color: string | null;
+                expanded: boolean | null;
+                _deleted: boolean;
+            }[];
+            outputFormat: "json";
+            status: import("hono/utils/http-status").ContentfulStatusCode;
+        };
+    };
+} & {
+    "/items/pull": {
+        $get: {
+            input: {
+                query: {
+                    uuid: string | string[];
+                    serverTimestamp: string | string[];
+                    batchSize?: string | string[] | undefined;
+                };
+            };
+            output: {
+                checkpoint: {
+                    uuid: string;
+                    serverTimestamp: string;
+                } | null;
+                documents: {
+                    status: string | null;
+                    id: string;
+                    raw_id: string | null;
+                    description: string | null;
+                    title: string;
+                    credits: number;
+                    semester: string | null;
+                    uuid: string;
+                    comments: string | null;
+                    parent: string | null;
+                    order: number;
+                    instructor: string | null;
+                    dependson: string | null;
+                    _deleted: boolean;
+                }[];
+            };
+            outputFormat: "json";
+            status: import("hono/utils/http-status").ContentfulStatusCode;
+        };
+    };
+} & {
+    "/items/push": {
+        $post: {
+            input: {
+                json: {
+                    newDocumentState: {
+                        uuid: string;
+                        _deleted: boolean;
+                    } & {
+                        [k: string]: unknown;
+                    };
+                    assumedMasterState?: import("zod").objectInputType<{
+                        uuid: import("zod").ZodString;
+                        _deleted: import("zod").ZodBoolean;
+                    }, import("zod").ZodTypeAny, "passthrough"> | undefined;
+                }[];
+            };
+            output: {
+                status: string | null;
+                id: string;
+                raw_id: string | null;
+                description: string | null;
+                title: string;
+                credits: number;
+                semester: string | null;
+                uuid: string;
+                comments: string | null;
+                parent: string | null;
+                order: number;
+                instructor: string | null;
+                dependson: string | null;
+                _deleted: boolean;
+            }[];
+            outputFormat: "json";
+            status: import("hono/utils/http-status").ContentfulStatusCode;
+        };
+    };
+} & {
+    "/plannerdata/pull": {
+        $get: {
+            input: {
+                query: {
+                    id: string | string[];
+                    serverTimestamp: string | string[];
+                    batchSize?: string | string[] | undefined;
+                };
+            };
+            output: {
+                checkpoint: {
+                    id: string;
+                    serverTimestamp: string;
+                } | null;
+                documents: {
+                    id: string;
+                    description: string | null;
+                    title: string;
+                    department: string;
+                    requiredCredits: number;
+                    enrollmentYear: string;
+                    graduationYear: string;
+                    includedSemesters: string;
+                    _deleted: boolean;
+                }[];
+            };
+            outputFormat: "json";
+            status: import("hono/utils/http-status").ContentfulStatusCode;
+        };
+    };
+} & {
+    "/plannerdata/push": {
+        $post: {
+            input: {
+                json: {
+                    newDocumentState: {
+                        id: string;
+                        _deleted: boolean;
+                    } & {
+                        [k: string]: unknown;
+                    };
+                    assumedMasterState?: import("zod").objectInputType<{
+                        id: import("zod").ZodString;
+                        _deleted: import("zod").ZodBoolean;
+                    }, import("zod").ZodTypeAny, "passthrough"> | undefined;
+                }[];
+            };
+            output: {
+                id: string;
+                description: string | null;
+                title: string;
+                department: string;
+                requiredCredits: number;
+                enrollmentYear: string;
+                graduationYear: string;
+                _deleted: boolean;
+                includedSemesters: string[];
+            }[];
+            outputFormat: "json";
+            status: import("hono/utils/http-status").ContentfulStatusCode;
+        };
+    };
+} & {
+    "/semesters/pull": {
+        $get: {
+            input: {
+                query: {
+                    id: string | string[];
+                    serverTimestamp: string | string[];
+                    batchSize?: string | string[] | undefined;
+                };
+            };
+            output: {
+                checkpoint: {
+                    id: string;
+                    serverTimestamp: string;
+                } | null;
+                documents: {
+                    status: string;
+                    id: string;
+                    term: string;
+                    name: string;
+                    year: string;
+                    order: number | null;
+                    startDate: string | null;
+                    endDate: string | null;
+                    isActive: boolean;
+                    _deleted: boolean;
+                }[];
+            };
+            outputFormat: "json";
+            status: import("hono/utils/http-status").ContentfulStatusCode;
+        };
+    };
+} & {
+    "/semesters/push": {
+        $post: {
+            input: {
+                json: {
+                    newDocumentState: {
+                        id: string;
+                        _deleted: boolean;
+                    } & {
+                        [k: string]: unknown;
+                    };
+                    assumedMasterState?: import("zod").objectInputType<{
+                        id: import("zod").ZodString;
+                        _deleted: import("zod").ZodBoolean;
+                    }, import("zod").ZodTypeAny, "passthrough"> | undefined;
+                }[];
+            };
+            output: {
+                status: string;
+                id: string;
+                term: string;
+                name: string;
+                year: string;
+                order: number | null;
+                startDate: string | null;
+                endDate: string | null;
+                isActive: boolean;
+                _deleted: boolean;
+            }[];
+            outputFormat: "json";
+            status: import("hono/utils/http-status").ContentfulStatusCode;
+        };
+    };
+}, "/planner">, "/">;
 export default app;
